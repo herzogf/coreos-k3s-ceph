@@ -1,15 +1,18 @@
 apiVersion: ceph.rook.io/v1
 kind: CephFilesystem
 metadata:
-  name: example.net
+  name: example-net
   namespace: rook-ceph
+
 spec:
   metadataPool:
+    failureDomain: host
     replicated:
       size: 3
   dataPools:
-  - replicated:
-      size: 3
+    - failureDomain: host
+      replicated:
+        size: 3
   preservePoolsOnDelete: true
   metadataServer:
     activeCount: 1

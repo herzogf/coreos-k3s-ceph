@@ -1,4 +1,4 @@
-### K3S on CoreOS
+# K3S on CoreOS
 
 Label the nodes:
 ```
@@ -9,7 +9,18 @@ sudo /usr/local/bin/k3s kubectl label node k3s-agent-0.example.net node-role.kub
 sudo /usr/local/bin/k3s kubectl label node k3s-agent-1.example.net node-role.kubernetes.io/worker="true"
 ```
 
-Install the Operator:
+## Traefik
+
+Install the Traefik 'Operator':
+```
+sudo /usr/local/bin/k3s kubectl create -f /opt/traefik/traefik-01-common.yaml
+sudo /usr/local/bin/k3s kubectl create -f /opt/traefik/traefik-02-operator.yaml
+sudo /usr/local/bin/k3s kubectl create -f /opt/traefik/traefik-03-http-redirect.yaml
+```
+
+## Rook/Ceph
+
+Install the Rook Operator:
 ```
 sudo /usr/local/bin/k3s kubectl create -f /opt/rook/ceph-01-common.yaml
 sudo /usr/local/bin/k3s kubectl create -f /opt/rook/ceph-02-operator.yaml
@@ -26,4 +37,9 @@ sudo /usr/local/bin/k3s kubectl create -f /opt/rook/ceph-04-dashboard-ingress.ya
 Get the password for the UI with:
 ```
 sudo /usr/local/bin/k3s kubectl -n rook-ceph get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
+```
+
+Add a filesystem to the Ceph cluster:
+```
+sudo /usr/local/bin/k3s kubectl create -f /opt/rook/ceph-05-filesystem.yaml
 ```
