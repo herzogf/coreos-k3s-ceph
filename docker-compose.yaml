@@ -1,0 +1,15 @@
+version: "3.7"
+
+services:
+
+  nginx:
+    image: nginx:alpine
+    ports:
+    - target: 80
+      published: 80
+      protocol: tcp
+    volumes: 
+    - type: bind
+      read_only: true
+      source: ./tftp
+      target: /usr/share/nginx/html

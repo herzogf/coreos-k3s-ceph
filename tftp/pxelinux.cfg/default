@@ -1,0 +1,37 @@
+UI vesamenu.c32
+MENU RESOLUTION 768 480
+MENU TITLE PXE Boot Options
+TIMEOUT 50
+
+LABEL next
+	MENU LABEL Local Boot
+	MENU DEFAULT
+	localboot
+
+MENU SEPARATOR
+
+LABEL rhcos-k3s-server
+    MENU LABEL RedHat CoreOS K3S Server
+    KERNEL rhcos/4.2.0/x86_64-installer-kernel
+    INITRD rhcos/4.2.0/x86_64-installer-initramfs.img
+    APPEND mitigations=off ip=dhcp rd.neednet=1 coreos.inst=yes coreos.inst.image_url=http://192.168.81.11/rhcos/4.2.0/x86_64-metal-bios.raw.gz coreos.inst.ignition_url=http://192.168.81.11/rhcos/k3s-server.json coreos.inst.install_dev=sda
+
+LABEL rhcos-k3s-agent
+    MENU LABEL RedHat CoreOS K3S Agent
+    KERNEL rhcos/4.2.0/x86_64-installer-kernel
+    INITRD rhcos/4.2.0/x86_64-installer-initramfs.img
+    APPEND mitigations=off ip=dhcp rd.neednet=1 coreos.inst=yes coreos.inst.image_url=http://192.168.81.11/rhcos/4.2.0/x86_64-metal-bios.raw.gz coreos.inst.ignition_url=http://192.168.81.11/rhcos/k3s-agent.json coreos.inst.install_dev=sda
+
+MENU SEPARATOR
+
+LABEL fcos-k3s-server
+    MENU LABEL Fedora CoreOS K3S Server
+    KERNEL fcos/31.20191211.1/kernel-x86_64
+    INITRD fcos/31.20191211.1/initramfs.x86_64.img
+    APPEND mitigations=off ip=dhcp rd.neednet=1 coreos.inst=yes coreos.inst.image_url=http://192.168.81.11/fcos/31.20191211.1/metal.x86_64.raw.xz coreos.inst.ignition_url=http://192.168.81.11/ignition/k3s-server.json coreos.inst.install_dev=sda
+
+LABEL fcos-k3s-agent
+    MENU LABEL Fedora CoreOS K3S Agent
+    KERNEL fcos/31.20191211.1/kernel-x86_64
+    INITRD fcos/31.20191211.1/initramfs.x86_64.img
+    APPEND mitigations=off ip=dhcp rd.neednet=1 coreos.inst=yes coreos.inst.image_url=http://192.168.81.11/fcos/31.20191211.1/metal.x86_64.raw.xz coreos.inst.ignition_url=http://192.168.81.11/ignition/k3s-agent.json coreos.inst.install_dev=sda

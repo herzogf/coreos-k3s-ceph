@@ -1,0 +1,14 @@
+/tftp/fcos/*/initramfs.x86_64.img
+/tftp/fcos/*/kernel-x86_64
+/tftp/fcos/*/metal.x86_64.raw.xz
+
+/tftp/k3os/*/k3os-amd64.iso
+/tftp/k3os/*/k3os-initrd-amd64
+/tftp/k3os/*/k3os-vmlinuz-amd64
+
+/tftp/rhcos/bin/*
+!/tftp/rhcos/bin/install.sh
+
+/tftp/rhcos/*/x86_64-installer-initramfs.img
+/tftp/rhcos/*/x86_64-installer-kernel
+/tftp/rhcos/*/x86_64-metal-bios.raw.gz

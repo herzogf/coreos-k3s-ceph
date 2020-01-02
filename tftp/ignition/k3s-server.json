@@ -1,0 +1,148 @@
+{
+  "ignition": {
+    "config": {
+      "replace": {
+        "source": null,
+        "verification": {}
+      }
+    },
+    "security": {
+      "tls": {}
+    },
+    "timeouts": {},
+    "version": "3.0.0"
+  },
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "sshAuthorizedKeys": [
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCYA8hVwKoy7GMl6Nq87gfxw1iBT7zxvBJidFV+2dHUVomQwGvGVByIND5Ffl2QznJKeCAEyiUDI6hxrUuRlGXITKkCJlz4J5s0Rql8VPxvW9P2VlOuxPikZnsla5rNJrtAFo0n2Kh8CgjwICOqp8Gh/qNV8D3DaIRSB8TWedDH8+wnUlNj8BNilNZ72MTjIsV2DCPNAIyFxCspbLJ5vsoj0XUInQKh+IaW9A4xxJ6jVOmA76yaeDTsBFYI+KJ2+/01pcpxH/r0iZ4QwoK6wTjf4I7EPNCCenGa6TscquQaSznjLhJEJS+JWiwtuHhGQKIxAKduOk0G6+kc7QDD4EpJ afa@AFA-PC"
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "disks": [
+      {
+        "device": "/dev/sdb",
+        "wipeTable": true
+      }
+    ],
+    "files": [
+      {
+        "group": {
+          "name": "root"
+        },
+        "path": "/usr/local/bin/k3s",
+        "user": {
+          "name": "root"
+        },
+        "contents": {
+          "source": "https://github.com/rancher/k3s/releases/download/v1.0.0/k3s",
+          "verification": {
+            "hash": "sha512-bbea8cd86a5c660e646b002a013593d25d9c20bb1194f2d9bd4ecaa60eb9d43bda368e313c5f09df6c6d5d2602e3235bb366336c1a2fd57f3042f05ff09f3de4"
+          }
+        },
+        "mode": 493
+      },
+      {
+        "group": {
+          "name": "root"
+        },
+        "path": "/usr/local/etc/k3s/token",
+        "user": {
+          "name": "root"
+        },
+        "contents": {
+          "source": "data:text/plain;charset=utf-8;base64,NWVhOWNiNTktMjc0NC0zMmE2LWJmZWMtZThlN2NhNmIxMTU5",
+          "verification": {}
+        },
+        "mode": 256
+      },
+      {
+        "group": {
+          "name": "root"
+        },
+        "path": "/opt/rook/ceph-01-common.yaml",
+        "user": {
+          "name": "root"
+        },
+        "contents": {
+          "source": "https://raw.githubusercontent.com/rook/rook/v1.2.0/cluster/examples/kubernetes/ceph/common.yaml",
+          "verification": {
+            "hash": "sha512-057e38ca8e7066df8eb6449ef7e35e390825f8bfc2cd7d46ca1e464273a990e965031030f92d090e963b05c06e0989d6e5a059b658931f3972e706358b6f71d8"
+          }
+        },
+        "mode": 420
+      },
+      {
+        "group": {
+          "name": "root"
+        },
+        "path": "/opt/rook/ceph-02-operator.yaml",
+        "user": {
+          "name": "root"
+        },
+        "contents": {
+          "source": "https://raw.githubusercontent.com/rook/rook/v1.2.0/cluster/examples/kubernetes/ceph/operator.yaml",
+          "verification": {
+            "hash": "sha512-0dc6212344da92ead92b6e81cfa51f2659664462ae8d12beded92fb34137e4d638520b5e93453980831b5b8549fac83256a68268c448a76e715b38f8e9d277c0"
+          }
+        },
+        "mode": 420
+      },
+      {
+        "group": {
+          "name": "root"
+        },
+        "path": "/opt/rook/ceph-03-cluster.yaml",
+        "user": {
+          "name": "root"
+        },
+        "contents": {
+          "source": "data:text/plain;charset=utf-8;base64,YXBpVmVyc2lvbjogY2VwaC5yb29rLmlvL3YxCmtpbmQ6IENlcGhDbHVzdGVyCm1ldGFkYXRhOgogIG5hbWU6IHJvb2stY2VwaAogIG5hbWVzcGFjZTogcm9vay1jZXBoCnNwZWM6CiAgY2VwaFZlcnNpb246CiAgICAjIGh0dHBzOi8vaHViLmRvY2tlci5jb20vci9jZXBoL2NlcGgvdGFncwogICAgaW1hZ2U6IGNlcGgvY2VwaDp2MTQuMi41CiAgZGF0YURpckhvc3RQYXRoOiAvdmFyL2xpYi9yb29rCiAgbW9uOgogICAgY291bnQ6IDMKICBkYXNoYm9hcmQ6CiAgICBlbmFibGVkOiB0cnVlCiAgICBwb3J0OiA4MDgwCiAgICBzc2w6IGZhbHNlCiAgbW9uaXRvcmluZzoKICAgIGVuYWJsZWQ6IGZhbHNlCiAgbmV0d29yazoKICAgIGhvc3ROZXR3b3JrOiBmYWxzZQogIHBsYWNlbWVudDoKICAgIG1ncjoKICAgICAgbm9kZUFmZmluaXR5OgogICAgICAgIHJlcXVpcmVkRHVyaW5nU2NoZWR1bGluZ0lnbm9yZWREdXJpbmdFeGVjdXRpb246CiAgICAgICAgICBub2RlU2VsZWN0b3JUZXJtczoKICAgICAgICAgIC0gbWF0Y2hFeHByZXNzaW9uczoKICAgICAgICAgICAgLSBrZXk6ICJub2RlLXJvbGUua3ViZXJuZXRlcy5pby9tYXN0ZXIiCiAgICAgICAgICAgICAgb3BlcmF0b3I6IEluCiAgICAgICAgICAgICAgdmFsdWVzOgogICAgICAgICAgICAgIC0gInRydWUiCiAgYW5ub3RhdGlvbnM6CiAgcmVzb3VyY2VzOgogIHN0b3JhZ2U6CiAgICB1c2VBbGxOb2RlczogdHJ1ZQogICAgdXNlQWxsRGV2aWNlczogZmFsc2UKICAgIGRldmljZUZpbHRlcjogInNkYiIKICAgIGNvbmZpZzoKICAgICAgb3Nkc1BlckRldmljZTogIjEiCg==",
+          "verification": {}
+        },
+        "mode": 420
+      },
+      {
+        "group": {
+          "name": "root"
+        },
+        "path": "/opt/rook/ceph-04-dashboard-ingress.yaml",
+        "user": {
+          "name": "root"
+        },
+        "contents": {
+          "source": "data:text/plain;charset=utf-8;base64,YXBpVmVyc2lvbjogZXh0ZW5zaW9ucy92MWJldGExCmtpbmQ6IEluZ3Jlc3MKbWV0YWRhdGE6CiAgbmFtZTogcm9vay1jZXBoLW1nci1kYXNoYm9hcmQKICBuYW1lc3BhY2U6IHJvb2stY2VwaAogIGFubm90YXRpb25zOgogICAga3ViZXJuZXRlcy5pby9pbmdyZXNzLmNsYXNzOiAidHJhZWZpayIKc3BlYzoKICBydWxlczoKICAtIGhvc3Q6IHJvb2stY2VwaC5kb2xhbnk4MS5uZXQKICAgIGh0dHA6CiAgICAgIHBhdGhzOgogICAgICAgIC0gcGF0aDogLwogICAgICAgICAgYmFja2VuZDoKICAgICAgICAgICAgc2VydmljZU5hbWU6IHJvb2stY2VwaC1tZ3ItZGFzaGJvYXJkCiAgICAgICAgICAgIHNlcnZpY2VQb3J0OiBkYXNoYm9hcmQK",
+          "verification": {}
+        },
+        "mode": 420
+      },
+      {
+        "group": {
+          "name": "root"
+        },
+        "path": "/opt/rook/ceph-05-filesystem.yaml",
+        "user": {
+          "name": "root"
+        },
+        "contents": {
+          "source": "data:text/plain;charset=utf-8;base64,YXBpVmVyc2lvbjogY2VwaC5yb29rLmlvL3YxCmtpbmQ6IENlcGhGaWxlc3lzdGVtCm1ldGFkYXRhOgogIG5hbWU6IGRvbGFueTgxCiAgbmFtZXNwYWNlOiByb29rLWNlcGgKc3BlYzoKICBtZXRhZGF0YVBvb2w6CiAgICByZXBsaWNhdGVkOgogICAgICBzaXplOiAzCiAgZGF0YVBvb2xzOgogIC0gcmVwbGljYXRlZDoKICAgICAgc2l6ZTogMwogIHByZXNlcnZlUG9vbHNPbkRlbGV0ZTogdHJ1ZQogIG1ldGFkYXRhU2VydmVyOgogICAgYWN0aXZlQ291bnQ6IDEKICAgIGFjdGl2ZVN0YW5kYnk6IHRydWUK",
+          "verification": {}
+        },
+        "mode": 420
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "contents": "[Unit]\nDescription=Lightweight Kubernetes\nDocumentation=https://k3s.io\nAfter=network-online.target\n\n[Install]\nWantedBy=multi-user.target\n\n[Service]\nType=notify\nKillMode=process\nDelegate=yes\nLimitNOFILE=infinity\nLimitNPROC=infinity\nLimitCORE=infinity\nTasksMax=infinity\nTimeoutStartSec=0\nRestart=always\nRestartSec=5s\nExecStartPre=-/sbin/modprobe br_netfilter\nExecStartPre=-/sbin/modprobe overlay\nExecStart=/usr/local/bin/k3s server \\\n  --cluster-domain example.net \\\n  --token-file /usr/local/etc/k3s/token\n",
+        "enabled": true,
+        "name": "k3s.service"
+      }
+    ]
+  }
+}
