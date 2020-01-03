@@ -1,0 +1,16 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: rook-ceph-mgr-dashboard
+  namespace: rook-ceph
+spec:
+  entryPoints:
+    - https
+  routes:
+    - kind: Rule
+      match: Host(`ceph.example.net`)
+      services:
+        - name: rook-ceph-mgr-dashboard
+          port: 8080
+  tls:
+    certresolver: letsencrypt

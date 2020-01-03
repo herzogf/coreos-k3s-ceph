@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: thelounge
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: thelounge
+  name: thelounge-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: csi-cephfs
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thelounge
+  namespace: thelounge
+  labels:
+    app: thelounge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thelounge
+  template:
+    metadata:
+      labels:
+        app: thelounge
+    spec:
+      containers:
+        - name: thelounge
+          image: thelounge/thelounge:4.0.0
+          ports:
+            - name: http
+              containerPort: 9000
+          volumeMounts:
+            - mountPath: /var/opt/thelounge
+              name: thelounge
+              subPath: data
+              readOnly: false
+      volumes:
+        - name: thelounge
+          persistentVolumeClaim:
+            claimName: thelounge-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: thelounge
+  name: thelounge
+  labels:
+    app: thelounge
+spec:
+  selector:
+    app: thelounge
+  ports:
+  - name: http
+    port: 9000
+    targetPort: http
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: thelounge
+  namespace: thelounge
+spec:
+  entryPoints:
+    - https
+  routes:
+    - kind: Rule
+      match: Host(`irc.example.net`)
+      services:
+        - name: thelounge
+          port: 9000
+  tls:
+    certresolver: letsencrypt

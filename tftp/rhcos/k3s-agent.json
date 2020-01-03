@@ -33,7 +33,7 @@
           "name": "root"
         },
         "contents": {
-          "source": "https://github.com/rancher/k3s/releases/download/v1.0.0/k3s",
+          "source": "http://192.168.81.11/k3s",
           "verification": {
             "hash": "sha512-bbea8cd86a5c660e646b002a013593d25d9c20bb1194f2d9bd4ecaa60eb9d43bda368e313c5f09df6c6d5d2602e3235bb366336c1a2fd57f3042f05ff09f3de4"
           }
