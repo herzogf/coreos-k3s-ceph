@@ -55,8 +55,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: thelounge
   name: thelounge
+  namespace: thelounge
   labels:
     app: thelounge
 spec:

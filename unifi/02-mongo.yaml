@@ -1,0 +1,133 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: mongo-init
+  namespace: unifi
+data:
+  01-admin.sh: |
+    #!/bin/bash
+
+    create_user() {
+        mongo admin \
+            --host localhost \
+            --username admin \
+            --password ExampleNET \
+            --eval "db.createUser($1);"
+    }
+
+    create_user "{
+        user: 'unifi',
+        pwd:  'unifi',
+        roles: [
+            {
+                role: 'readWrite',
+                db:   'unifi'
+            },
+            {
+                role: 'readWrite',
+                db:   'unifi_stat'
+            }
+        ]
+    }"
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo
+  namespace: unifi
+  labels:
+    app: mongo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mongo
+  serviceName: "mongo"
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      initContainers:
+        - name: secret-ownership
+          image: alpine
+          # Give mongodb user (id 999) ownership of mounted secret
+          command: [
+            "sh", "-c",
+            "cp /opt/secret/keyfile.txt /opt/keyfile && chmod 400 /opt/keyfile/keyfile.txt && chown -R 999:999 /opt/keyfile/keyfile.txt"
+          ]
+          env:
+            - name: MONGO_VOLUME_SUBPATH
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+          volumeMounts:
+            - name: mongo-keyfile
+              mountPath: /opt/secret
+            - name: mongo-data
+              mountPath: /opt/keyfile
+              subPathExpr: keyfile/$(MONGO_VOLUME_SUBPATH)
+      containers:
+        - name: mongo
+          image: mongo:4.0
+          args: [
+            "mongod",
+            "--bind_ip_all",
+            "--replSet", "unifi",
+            "--keyFile", "/opt/keyfile/keyfile.txt",
+          ]
+          ports:
+            - name: mongo
+              containerPort: 27017
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: admin
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: ExampleNET
+            - name: MONGO_INITDB_DATABASE
+              value: unifi
+            - name: MONGO_VOLUME_SUBPATH
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+          volumeMounts:
+            - name: mongo-init
+              mountPath: /docker-entrypoint-initdb.d/
+            - name: mongo-data
+              mountPath: /data/db
+              subPathExpr: $(MONGO_VOLUME_SUBPATH)
+            - name: mongo-data
+              mountPath: /opt/keyfile
+              subPathExpr: keyfile/$(MONGO_VOLUME_SUBPATH)
+              readOnly: true
+      volumes:
+        - name: mongo-keyfile
+          secret:
+            secretName: mongo-keyfile
+        - name: mongo-init
+          configMap:
+            name: mongo-init
+            defaultMode: 0755
+        - name: mongo-data
+          persistentVolumeClaim:
+            claimName: unifi-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  namespace: unifi
+  labels:
+    app: mongo
+spec:
+  selector:
+    app: mongo
+  clusterIP: None
+  ports:
+    - name: mongo
+      port: 27017
+      targetPort: mongo

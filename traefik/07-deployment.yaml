@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  namespace: traefik
   name: traefik-pvc
+  namespace: traefik
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 128Mi
@@ -47,22 +47,20 @@ spec:
             - --api.insecure
             - --global.sendAnonymousUsage
             - --providers.kubernetescrd
-            - --entrypoints.http.address=:6080
-            - --entrypoints.https.address=:6443
-            - --entrypoints.traefik.address=:8080
+            - --entrypoints.http.address=:8080
+            - --entrypoints.https.address=:8443
+            - --entrypoints.traefik.address=:8888
             - --certificatesresolvers.letsencrypt.acme.tlschallenge
-            - --certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+            - --certificatesresolvers.letsencrypt.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
             - --certificatesresolvers.letsencrypt.acme.email=noreply@example.net
             - --certificatesresolvers.letsencrypt.acme.storage=/traefik/acme.json
           ports:
             - name: http
-              containerPort: 6080
+              containerPort: 8080
               hostPort: 80
             - name: https
-              containerPort: 6443
+              containerPort: 8443
               hostPort: 443
-            - name: traefik
-              containerPort: 8080
           volumeMounts:
             - mountPath: /traefik
               name: traefik
@@ -72,24 +70,6 @@ spec:
         - name: traefik
           persistentVolumeClaim:
             claimName: traefik-pvc
-
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: traefik-dashboard
-  namespace: traefik
-spec:
-  entryPoints:
-    - https
-  routes:
-    - kind: Rule
-      match: Host(`traefik.example.net`)
-      services:
-        - kind: TraefikService
-          name: api@internal
-  tls:
-    certresolver: letsencrypt
 
 ---
 # Middleware to redirect HTTP to HTTPS
@@ -121,3 +101,21 @@ spec:
           name: api@internal
       middlewares:
         - name: http-redirect
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard
+  namespace: traefik
+spec:
+  entryPoints:
+    - https
+  routes:
+    - kind: Rule
+      match: Host(`traefik.example.net`)
+      services:
+        - kind: TraefikService
+          name: api@internal
+  tls:
+    certResolver: letsencrypt

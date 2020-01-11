@@ -1,0 +1,99 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: unifi-config-gateway
+  namespace: unifi
+data:
+  config.gateway.json: |
+    {
+      "system": {
+        "static-host-mapping": {
+          "host-name": {
+            "k3s-server-0.example.net": {
+              "alias": ["k3s-server-0"],
+              "inet": ["192.168.16.101"]
+            },
+            "k3s-agent-0.example.net": {
+              "alias": ["k3s-agent-0"],
+              "inet": ["192.168.16.102"]
+            },
+            "k3s-agent-1.example.net": {
+              "alias": ["k3s-agent-1"],
+              "inet": ["192.168.16.103"]
+            }
+          }
+        }
+      }
+    }
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unifi
+  namespace: unifi
+  labels:
+    app: unifi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: unifi
+  template:
+    metadata:
+      labels:
+        app: unifi
+    spec:
+      containers:
+        - name: unifi
+          image: stellirin/unifi-controller:latest
+          ports:
+              # ???
+            - containerPort: 1900
+              protocol: UDP
+              # STUN
+            - containerPort: 3478
+              protocol: UDP
+              # Speed test
+            - containerPort: 6789
+              protocol: TCP
+              # Device / controller communication
+            - containerPort: 8080
+              protocol: TCP
+              # Controller GUI/API as seen in a web browser
+            - containerPort: 8443
+              protocol: TCP
+              # HTTP portal redirection
+            - containerPort: 8880
+              protocol: TCP
+              # HTTPS portal redirection
+            - containerPort: 8843
+              protocol: TCP
+              # AP discovery
+            - containerPort: 10001
+              protocol: UDP
+          env:
+            - name: MONGO_DB_HOST
+              value: "mongo.unifi.svc.example.net"
+            - name: MONGO_DB_PORT
+              value: "27017"
+            - name: MONGO_DB_USER
+              value: "unifi"
+            - name: MONGO_DB_PASS
+              value: "unifi"
+          volumeMounts:
+            - name: unifi-config-gateway
+              mountPath: /var/lib/unifi/sites/default/config.gateway.json
+              subPath: config.gateway.json
+              readOnly: true
+            - mountPath: /var/lib/unifi
+              name: unifi-data
+              subPath: unifi
+              readOnly: false
+      volumes:
+        - name: unifi-config-gateway
+          configMap:
+            name: unifi-config-gateway
+        - name: unifi-data
+          persistentVolumeClaim:
+            claimName: unifi-pvc

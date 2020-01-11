@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: unifi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: unifi-pvc
+  namespace: unifi
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: csi-cephfs
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongo-keyfile
+  namespace: unifi
+data:
+  keyfile.txt: WmpJeE1qWmpNVGd0WmpZeU9DMDFNVFU1TFdFNVl6VXROVFExWVRKallURXdaV1Zp
