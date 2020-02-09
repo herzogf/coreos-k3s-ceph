@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Pod
+metadata:
+  name: unifi-restore
+  namespace: unifi
+  labels:
+    app: unifi-restore
+spec:
+  containers:
+    - name: unifi-restore
+      image: alpine:latest
+      command: [
+        "sh", "-c",
+        "wget -O /unifi.tar.gz http://192.168.81.11/unifi.tar.gz && tar -C /volume/ -xzf /unifi.tar.gz"
+      ]
+      volumeMounts:
+        - mountPath: /volume
+          name: unifi-data
+          subPath: unifi
+          readOnly: false
+  volumes:
+    - name: unifi-data
+      persistentVolumeClaim:
+        claimName: unifi-pvc
